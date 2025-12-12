@@ -357,7 +357,8 @@ After logging in, you'll see three tabs:
 - **My Requests** - View your request history
 - **Pending Approvals** - (Managers only)
 
-<img width="1017" height="860" alt="image" src="https://github.com/user-attachments/assets/9d9ddac1-ce60-4c2e-859c-821f80cc50a0" />
+<img width="1046" height="1191" alt="image" src="https://github.com/user-attachments/assets/89f4fa0b-9338-4092-b9fe-06213883b688" />
+
 
 
 #### Step 2: Fill Out Request Form
@@ -405,7 +406,7 @@ Click the "My Requests" tab to see:
 - When access was granted and when it expires
 - Who approved (for high-risk requests)
 
-![My Requests Tab - INSERT SCREENSHOT HERE]
+<img width="1027" height="1160" alt="image" src="https://github.com/user-attachments/assets/3e19d2d7-8e44-4e7e-9e80-554f909eb3b8" />
 
 **Status Meanings:**
 - **ACTIVE** 🟢 - Access is currently granted
@@ -424,7 +425,8 @@ If you no longer need access before it expires:
 5. Access will be immediately revoked
 6. You'll receive an email confirmation
 
-![Revoke Button - INSERT SCREENSHOT HERE]
+<img width="1017" height="860" alt="image" src="https://github.com/user-attachments/assets/9aae9e03-ff37-4a10-8995-8e9e84fb69f3" />
+
 
 **Why revoke early?**
 - Security best practice
@@ -511,7 +513,8 @@ As a manager, you are responsible for:
 2. You'll see an additional tab: **Pending Approvals**
 3. Click the "Pending Approvals" tab
 
-![Manager Dashboard - INSERT SCREENSHOT HERE]
+<img width="1017" height="860" alt="image" src="https://github.com/user-attachments/assets/9aae9e03-ff37-4a10-8995-8e9e84fb69f3" />
+
 
 ### Reviewing Pending Requests
 
@@ -523,7 +526,7 @@ The Pending Approvals tab shows:
 - Request timestamp
 - Duration requested
 
-![Pending Approvals List - INSERT SCREENSHOT HERE]
+<img width="1017" height="860" alt="image" src="https://github.com/user-attachments/assets/9aae9e03-ff37-4a10-8995-8e9e84fb69f3" />
 
 ### Approval Decision Criteria
 
@@ -554,7 +557,7 @@ The Pending Approvals tab shows:
 - ✅ Access will auto-revoke after duration
 - ✅ Your decision recorded in audit log
 
-![Approval Confirmation - INSERT SCREENSHOT HERE]
+<img width="857" height="641" alt="image" src="https://github.com/user-attachments/assets/4806b6a6-a576-474e-9a99-4985c7b95575" />
 
 ### Denying a Request
 
@@ -570,7 +573,8 @@ The Pending Approvals tab shows:
 - ✅ User notified via email with your reason
 - ✅ Decision recorded in audit log
 
-![Denial Dialog - INSERT SCREENSHOT HERE]
+<img width="693" height="513" alt="image" src="https://github.com/user-attachments/assets/03fd3632-afea-4145-ac31-cc58aaaec04e" />
+
 
 ### Email Notifications
 
