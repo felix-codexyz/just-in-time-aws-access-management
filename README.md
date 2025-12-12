@@ -5,7 +5,7 @@
 **Version:** 1.0.0  
 **Last Updated:** December 2025  
 **Portal URL:** https://d72cs5opijkjl.cloudfront.net  
-**GitHub Repository:** [Your Repository URL Here]
+**GitHub Repository:** https://github.com/felix-codexyz/just-in-time-aws-access-management
 
 ---
 
