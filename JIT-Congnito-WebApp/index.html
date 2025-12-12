@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JIT Access Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.6/dist/amazon-cognito-identity.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1000px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .login-form, .request-form, .dashboard {
+            display: none;
+        }
+
+        .login-form.active, .request-form.active, .dashboard.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+            width: auto;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .requests-list {
+            margin-top: 20px;
+        }
+
+        .request-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: border-color 0.3s;
+        }
+
+        .request-card:hover {
+            border-color: #667eea;
+        }
+
+        .request-card.pending-approval {
+            border-color: #ffc107;
+            background: #fffef5;
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .request-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-revoked {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-denied {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .request-details {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .request-details p {
+            margin: 4px 0;
+        }
+
+        .approval-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .user-info {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            margin-bottom: -2px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .comment-box {
+            margin-top: 10px;
+        }
+
+        .comment-box textarea {
+            min-height: 60px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 JIT Access Portal</h1>
+            <p>Request temporary AWS access with automated approval</p>
+        </div>
+
+        <div class="content">
+            <!-- Login Form -->
+            <div class="login-form active" id="loginForm">
+                <h2 style="margin-bottom: 20px;">Sign In</h2>
+                <div id="loginAlert"></div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="your.email@company.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+                <button class="btn" onclick="login()">Sign In</button>
+            </div>
+
+            <!-- Main Dashboard -->
+            <div class="dashboard" id="dashboard">
+                <div class="user-info">
+                    <strong>👤 Logged in as:</strong> <span id="userEmail"></span>
+                    <button class="btn btn-secondary" onclick="logout()" style="width: auto; margin-top: 10px; padding: 8px 16px; font-size: 14px;">Logout</button>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('request')">New Request</button>
+                    <button class="tab" onclick="switchTab('history')">My Requests</button>
+                    <button class="tab" onclick="switchTab('approvals')">Pending Approvals</button>
+                </div>
+
+                <!-- Request Form Tab -->
+                <div class="tab-content active" id="requestTab">
+                    <div id="requestAlert"></div>
+                    <div class="form-group">
+                        <label>AWS Account</label>
+                        <select id="account">
+                            <option value="">Select account...</option>
+                            <option value="Management">Management (533267321107)</option>
+                            <option value="LogArchive">Log Archive (269423819609)</option>
+                            <option value="Audit">Audit (329668418788)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Permission Set</label>
+                        <select id="permissionSet">
+                            <option value="">Select permission...</option>
+                            <option value="S3FullAccess">S3 Full Access (Auto-approved)</option>
+                            <option value="EC2FullAccess">EC2 Full Access (Auto-approved)</option>
+                            <option value="EmergencyAdmin">Emergency Admin (Requires Approval)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Business Justification</label>
+                        <textarea id="reason" placeholder="Explain why you need this access..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Duration (minutes)</label>
+                        <input type="number" id="duration" value="60" min="5" max="60">
+                    </div>
+                    <button class="btn" onclick="submitRequest()">Submit Request</button>
+                </div>
+
+                <!-- History Tab -->
+                <div class="tab-content" id="historyTab">
+                    <div id="historyAlert"></div>
+                    <button class="btn btn-secondary" onclick="loadRequests()" style="margin-bottom: 15px;">🔄 Refresh</button>
+                    <div class="requests-list" id="requestsList">
+                        <div class="loading">Loading your requests...</div>
+                    </div>
+                </div>
+
+                <!-- Approvals Tab -->
+                <div class="tab-content" id="approvalsTab">
+                    <div id="approvalsAlert"></div>
+                    <button class="btn btn-secondary" onclick="loadPendingApprovals()" style="margin-bottom: 15px;">🔄 Refresh</button>
+                    <div class="requests-list" id="approvalsList">
+                        <div class="loading">Loading pending approvals...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            apiUrl: 'https://jghpu14cya.execute-api.us-east-1.amazonaws.com/prod',
+            region: 'us-east-1',
+            userPoolId: 'us-east-1_K0m5bnDVE',
+            clientId: '7i4gmqqpr3267jpejbpbb6rjpe'
+        };
+
+        let currentUser = null;
+        let idToken = null;
+        let userGroups = [];
+
+        // Initialize Cognito
+        const poolData = {
+            UserPoolId: CONFIG.userPoolId,
+            ClientId: CONFIG.clientId
+        };
+        const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+        // Check if user is already logged in
+        window.onload = function() {
+            currentUser = userPool.getCurrentUser();
+            if (currentUser) {
+                currentUser.getSession((err, session) => {
+                    if (!err && session.isValid()) {
+                        idToken = session.getIdToken().getJwtToken();
+                        // Extract groups from JWT token
+                        const payload = session.getIdToken().decodePayload();
+                        userGroups = payload['cognito:groups'] || [];
+                        showDashboard(currentUser.getUsername());
+                        loadRequests();
+                    }
+                });
+            }
+        };
+
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showAlert('loginAlert', 'Please enter email and password', 'error');
+                return;
+            }
+
+            const authData = {
+                Username: email,
+                Password: password
+            };
+
+            const authDetails = new AmazonCognitoIdentity.AuthenticationDetails(authData);
+            const userData = {
+                Username: email,
+                Pool: userPool
+            };
+
+            currentUser = new AmazonCognitoIdentity.CognitoUser(userData);
+
+            currentUser.authenticateUser(authDetails, {
+                onSuccess: (result) => {
+                    idToken = result.getIdToken().getJwtToken();
+                    // Extract groups from JWT token
+                    const payload = result.getIdToken().decodePayload();
+                    userGroups = payload['cognito:groups'] || [];
+                    showDashboard(email);
+                    loadRequests();
+                },
+                onFailure: (err) => {
+                    showAlert('loginAlert', err.message || 'Login failed', 'error');
+                },
+                newPasswordRequired: (userAttributes) => {
+                    const newPassword = prompt('Please set a new password:');
+                    if (newPassword) {
+                        currentUser.completeNewPasswordChallenge(newPassword, {}, {
+                            onSuccess: (result) => {
+                                idToken = result.getIdToken().getJwtToken();
+                                // Extract groups from JWT token
+                                const payload = result.getIdToken().decodePayload();
+                                userGroups = payload['cognito:groups'] || [];
+                                showDashboard(email);
+                                loadRequests();
+                            },
+                            onFailure: (err) => {
+                                showAlert('loginAlert', err.message, 'error');
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        function logout() {
+            if (currentUser) {
+                currentUser.signOut();
+            }
+            idToken = null;
+            document.getElementById('loginForm').classList.add('active');
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        function showDashboard(email) {
+            document.getElementById('loginForm').classList.remove('active');
+            document.getElementById('dashboard').classList.add('active');
+            document.getElementById('userEmail').textContent = email;
+            
+            // Show/hide approval tab based on group membership
+            const isManager = userGroups.includes('Managers');
+            const approvalTab = document.querySelectorAll('.tab')[2];
+            
+            if (isManager) {
+                approvalTab.style.display = 'block';
+            } else {
+                approvalTab.style.display = 'none';
+            }
+        }
+
+        async function submitRequest() {
+            const account = document.getElementById('account').value;
+            const permissionSet = document.getElementById('permissionSet').value;
+            const reason = document.getElementById('reason').value;
+            const duration = parseInt(document.getElementById('duration').value);
+            const email = document.getElementById('userEmail').textContent;
+
+            if (!account || !permissionSet || !reason) {
+                showAlert('requestAlert', 'Please fill in all fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${CONFIG.apiUrl}/requests`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': idToken
+                    },
+                    body: JSON.stringify({
+                        user_email: email,
+                        account_name: account,
+                        permission_set: permissionSet,
+                        reason: reason,
+                        duration_minutes: duration
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('requestAlert', data.message, 'success');
+                    document.getElementById('account').value = '';
+                    document.getElementById('permissionSet').value = '';
+                    document.getElementById('reason').value = '';
+                    setTimeout(() => {
+                        switchTab('history');
+                        loadRequests();
+                    }, 2000);
+                } else {
+                    showAlert('requestAlert', data.error || 'Request failed', 'error');
+                }
+            } catch (error) {
+                showAlert('requestAlert', 'Network error: ' + error.message, 'error');
+            }
+        }
+
+        async function loadRequests() {
+            document.getElementById('requestsList').innerHTML = '<div class="loading">Loading...</div>';
+
+            try {
+                const response = await fetch(`${CONFIG.apiUrl}/requests`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': idToken
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.requests) {
+                    displayRequests(data.requests);
+                } else {
+                    document.getElementById('requestsList').innerHTML = '<p>No requests found.</p>';
+                }
+            } catch (error) {
+                showAlert('historyAlert', 'Failed to load requests: ' + error.message, 'error');
+            }
+        }
+
+        async function loadPendingApprovals() {
+            document.getElementById('approvalsList').innerHTML = '<div class="loading">Loading...</div>';
+
+            try {
+                const response = await fetch(`${CONFIG.apiUrl}/requests`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': idToken
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.requests) {
+                    const pendingRequests = data.requests.filter(req => req.Status === 'PENDING');
+                    displayApprovals(pendingRequests);
+                } else {
+                    document.getElementById('approvalsList').innerHTML = '<p>No pending approvals.</p>';
+                }
+            } catch (error) {
+                showAlert('approvalsAlert', 'Failed to load approvals: ' + error.message, 'error');
+            }
+        }
+
+        function displayRequests(requests) {
+            const userEmail = document.getElementById('userEmail').textContent;
+            const userRequests = requests.filter(req => req.UserEmail === userEmail);
+
+            if (userRequests.length === 0) {
+                document.getElementById('requestsList').innerHTML = '<p>No requests yet. Submit your first request!</p>';
+                return;
+            }
+
+            userRequests.sort((a, b) => b.RequestTimestamp - a.RequestTimestamp);
+
+            const html = userRequests.map(req => {
+                const date = new Date(req.RequestTimestamp * 1000).toLocaleString();
+                const expires = req.ExpirationTimestamp ? new Date(req.ExpirationTimestamp * 1000).toLocaleString() : 'N/A';
+                const canRevoke = req.Status === 'ACTIVE';
+                
+                return `
+                    <div class="request-card">
+                        <div class="request-header">
+                            <span class="request-title">${req.PermissionSet}</span>
+                            <span class="status-badge status-${req.Status.toLowerCase()}">${req.Status}</span>
+                        </div>
+                        <div class="request-details">
+                            <p><strong>Account:</strong> ${req.AccountName}</p>
+                            <p><strong>Requested:</strong> ${date}</p>
+                            <p><strong>Expires:</strong> ${expires}</p>
+                            <p><strong>Reason:</strong> ${req.Reason}</p>
+                            ${req.ApproverEmail ? `<p><strong>Approver:</strong> ${req.ApproverEmail}</p>` : ''}
+                            ${req.ApprovalComments ? `<p><strong>Comments:</strong> ${req.ApprovalComments}</p>` : ''}
+                            ${req.RevokedBy ? `<p><strong>Revoked by:</strong> ${req.RevokedBy} (${req.RevocationType || 'AUTO'})</p>` : ''}
+                        </div>
+                        ${canRevoke ? `
+                            <div class="approval-actions">
+                                <button class="btn btn-small btn-danger" onclick="revokeAccess('${req.RequestId}')">
+                                    🚫 Revoke Now
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('requestsList').innerHTML = html;
+        }
+
+        function displayApprovals(requests) {
+            if (requests.length === 0) {
+                document.getElementById('approvalsList').innerHTML = '<p>No pending approvals at this time.</p>';
+                return;
+            }
+
+            requests.sort((a, b) => b.RequestTimestamp - a.RequestTimestamp);
+
+            const html = requests.map(req => {
+                const date = new Date(req.RequestTimestamp * 1000).toLocaleString();
+                
+                return `
+                    <div class="request-card pending-approval">
+                        <div class="request-header">
+                            <span class="request-title">⚠️ ${req.PermissionSet}</span>
+                            <span class="status-badge status-pending">${req.Status}</span>
+                        </div>
+                        <div class="request-details">
+                            <p><strong>User:</strong> ${req.UserEmail}</p>
+                            <p><strong>Account:</strong> ${req.AccountName}</p>
+                            <p><strong>Requested:</strong> ${date}</p>
+                            <p><strong>Duration:</strong> ${req.DurationMinutes} minutes</p>
+                            <p><strong>Reason:</strong> ${req.Reason}</p>
+                        </div>
+                        <div class="approval-actions">
+                            <button class="btn btn-small btn-success" onclick="approveRequest('${req.RequestId}', '${req.UserEmail}')">
+                                ✓ Approve
+                            </button>
+                            <button class="btn btn-small btn-danger" onclick="denyRequest('${req.RequestId}', '${req.UserEmail}')">
+                                ✗ Deny
+                            </button>
+                        </div>
+                        <div class="comment-box" id="comment-${req.RequestId}" style="display:none;">
+                            <textarea placeholder="Optional comments..." id="comments-${req.RequestId}"></textarea>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('approvalsList').innerHTML = html;
+        }
+
+        async function approveRequest(requestId, userEmail) {
+            const comments = document.getElementById(`comments-${requestId}`)?.value || 'Approved';
+            const approverEmail = document.getElementById('userEmail').textContent;
+
+            if (!confirm(`Approve access request for ${userEmail}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${CONFIG.apiUrl}/approvals`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': idToken
+                    },
+                    body: JSON.stringify({
+                        request_id: requestId,
+                        action: 'APPROVE',
+                        approver_email: approverEmail,
+                        comments: comments
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('approvalsAlert', `✓ Access approved for ${userEmail}`, 'success');
+                    setTimeout(() => loadPendingApprovals(), 2000);
+                } else {
+                    showAlert('approvalsAlert', data.error || 'Approval failed', 'error');
+                }
+            } catch (error) {
+                showAlert('approvalsAlert', 'Network error: ' + error.message, 'error');
+            }
+        }
+
+        async function denyRequest(requestId, userEmail) {
+            const comments = prompt(`Deny request for ${userEmail}. Please provide a reason:`);
+            
+            if (!comments) {
+                return;
+            }
+
+            const approverEmail = document.getElementById('userEmail').textContent;
+
+            try {
+                const response = await fetch(`${CONFIG.apiUrl}/approvals`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': idToken
+                    },
+                    body: JSON.stringify({
+                        request_id: requestId,
+                        action: 'DENY',
+                        approver_email: approverEmail,
+                        comments: comments
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('approvalsAlert', `✗ Request denied for ${userEmail}`, 'info');
+                    setTimeout(() => loadPendingApprovals(), 2000);
+                } else {
+                    showAlert('approvalsAlert', data.error || 'Denial failed', 'error');
+                }
+            } catch (error) {
+                showAlert('approvalsAlert', 'Network error: ' + error.message, 'error');
+            }
+        }
+
+        async function revokeAccess(requestId) {
+            const revokerEmail = document.getElementById('userEmail').textContent;
+
+            if (!confirm('Are you sure you want to revoke this access immediately?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${CONFIG.apiUrl}/revoke`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': idToken
+                    },
+                    body: JSON.stringify({
+                        request_id: requestId,
+                        revoker_email: revokerEmail
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('historyAlert', '✓ Access revoked successfully', 'success');
+                    setTimeout(() => loadRequests(), 2000);
+                } else {
+                    showAlert('historyAlert', data.error || 'Revocation failed', 'error');
+                }
+            } catch (error) {
+                showAlert('historyAlert', 'Network error: ' + error.message, 'error');
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            if (tab === 'request') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('requestTab').classList.add('active');
+            } else if (tab === 'history') {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('historyTab').classList.add('active');
+                loadRequests();
+            } else if (tab === 'approvals') {
+                document.querySelectorAll('.tab')[2].classList.add('active');
+                document.getElementById('approvalsTab').classList.add('active');
+                loadPendingApprovals();
+            }
+        }
+
+        function showAlert(elementId, message, type) {
+            const alertDiv = document.getElementById(elementId);
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
