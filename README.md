@@ -187,8 +187,9 @@ The Just-In-Time (JIT) Access Management System provides **temporary, time-bound
 #### 1. Access the Portal
 Navigate to: **https://d72cs5opijkjl.cloudfront.net**
 
-![Login Screen](./screenshots/login-screen.png)
-*Screenshot Placeholder: Portal login page*
+<img width="1053" height="551" alt="image" src="https://github.com/user-attachments/assets/49599c7a-276a-433e-a53a-30525e4b2a20" />
+
+*Portal login page*
 
 #### 2. First-Time Login
 - Enter your email and temporary password
@@ -202,8 +203,9 @@ Navigate to: **https://d72cs5opijkjl.cloudfront.net**
 4. Provide business justification
 5. Click **"Submit Request"**
 
-![Request Form](./screenshots/request-form.png)
-*Screenshot Placeholder: Access request form*
+<img width="1017" height="860" alt="image" src="https://github.com/user-attachments/assets/7ddc8a50-3d3f-496b-ab0f-2e0a7d2c7bb6" />
+
+*Access request form*
 
 #### 4. Access Your AWS Resources
 - Check your email for confirmation
@@ -219,8 +221,8 @@ Same portal: **https://d72cs5opijkjl.cloudfront.net**
 - You'll see an additional **"Pending Approvals"** tab
 - Review requests from your team
 
-![Pending Approvals](./screenshots/pending-approvals.png)
-*Screenshot Placeholder: Manager approval interface*
+<img width="1046" height="1191" alt="image" src="https://github.com/user-attachments/assets/cacbf6d7-6762-42d6-9840-53d2033774fb" />
+*Manager approval interface*
 
 #### 3. Approve or Deny
 - Click ✓ Approve or ✗ Deny
@@ -277,8 +279,9 @@ Click **"My Requests"** to see:
 - ❌ **DENIED** - Request was denied
 - ⚫ **REVOKED** - Access has been revoked
 
-![My Requests](./screenshots/my-requests.png)
-*Screenshot Placeholder: Request history view*
+<img width="1027" height="1160" alt="image" src="https://github.com/user-attachments/assets/bd29615b-b6b7-4fa7-aaf7-6d754a86c784" />
+
+*Request history view*
 
 #### Manual Revocation
 
@@ -346,8 +349,9 @@ As a manager, you review high-risk access requests. Consider:
    - If approved: Access granted in 1-2 minutes
    - If denied: User sees your reason
 
-![Manager Dashboard](./screenshots/manager-dashboard.png)
-*Screenshot Placeholder: Manager approval interface with pending requests*
+<img width="1046" height="1191" alt="image" src="https://github.com/user-attachments/assets/cacbf6d7-6762-42d6-9840-53d2033774fb" />
+
+*Manager approval interface with pending requests*
 
 #### Best Practices
 
