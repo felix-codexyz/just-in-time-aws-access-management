@@ -333,7 +333,8 @@ Target: arn:aws:lambda:us-east-1:533267321107:function:JIT-Revoke-Access
 2. Enter your email address and password
 3. Click "Sign In"
 
-![Portal Login Screen - INSERT SCREENSHOT HERE]
+<img width="1053" height="551" alt="image" src="https://github.com/user-attachments/assets/54983769-9b35-4116-a835-333e21c15ac8" />
+
 
 #### First-Time Login
 
