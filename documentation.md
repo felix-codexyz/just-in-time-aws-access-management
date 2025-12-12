@@ -381,7 +381,7 @@ After logging in, you'll see three tabs:
    - Default: 60 minutes
    - Access will be automatically revoked after this time
 
-![Request Form - INSERT SCREENSHOT HERE]
+<img width="1017" height="860" alt="image" src="https://github.com/user-attachments/assets/9aae9e03-ff37-4a10-8995-8e9e84fb69f3" />
 
 #### Step 3: Submit Request
 
