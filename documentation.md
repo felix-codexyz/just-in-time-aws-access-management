@@ -357,7 +357,8 @@ After logging in, you'll see three tabs:
 - **My Requests** - View your request history
 - **Pending Approvals** - (Managers only)
 
-![Portal Dashboard - INSERT SCREENSHOT HERE]
+<img width="1017" height="860" alt="image" src="https://github.com/user-attachments/assets/9d9ddac1-ce60-4c2e-859c-821f80cc50a0" />
+
 
 #### Step 2: Fill Out Request Form
 
